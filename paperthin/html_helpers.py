@@ -1,6 +1,7 @@
 import base64
 import re
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import Literal
 
 type ContentType = Literal["png", "svg", "tsv", "csv"]
@@ -49,31 +50,57 @@ QC_STYLE: str = (
 )
 
 
-def get_download_button(
-    content: bytes | str,
-    content_type: ContentType,
-    content_name: str,
-) -> str:
-    """Create the raw html string for an individual content download button."""
+@dataclass
+class DownloadButton:
+    label: str
+    content: bytes
+    mime: str
+    download_path: str
 
-    raw = content.encode("utf-8") if isinstance(content, str) else content
-    encoded = base64.b64encode(raw).decode("ascii")
-    uri = f"data:{MIMES[content_type]};base64,{encoded}"
-    download_name = f"{content_name}.{content_type}"
-    display_name = content_type.upper()
+    _EMBED_TEMPLATE = (
+        '<a href="data:{mime};base64,{content}" '
+        'download="{path}" '
+        'class="qc-download-btn">'
+        "{label}</a>"
+    )
 
-    return f'<a href="{uri}" download="{download_name}" class="qc-download-btn">{display_name}</a>'
+    def get_embeddable(self) -> str:
+        """Create the raw html string for an individual content download button."""
+
+        return self._EMBED_TEMPLATE.format(
+            mime=self.mime,
+            content=base64.b64encode(self.content).decode("ascii"),
+            path=self.download_path,
+            label=self.label,
+        )
+
+    @classmethod
+    def from_format(
+        cls,
+        title: str,
+        content: bytes,
+        format: ContentType,
+    ) -> "DownloadButton":
+        """Create the raw html string for an individual content download button."""
+        return cls(format.upper(), content, MIMES[format], f"{title}.{format}")
 
 
 def _slugify(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
 
 
-def _get_downloads_div(buttons: Iterable[str]) -> str:
-    return f'<div class="qc-buttons">{"".join(buttons)}</div>' if buttons else ""
+def get_html(
+    display: str,
+    title: str,
+    info: str,
+    buttons: Iterable[DownloadButton],
+) -> str:
 
-
-def get_html(display: str, title: str, info: str, buttons: Iterable[str]) -> str:
+    downloads_div = (
+        f'<div class="qc-buttons">{"".join(b.get_embeddable() for b in buttons)}</div>'
+        if buttons
+        else ""
+    )
 
     description_bar = (
         '<div class="qc-row">'
@@ -83,7 +110,7 @@ def get_html(display: str, title: str, info: str, buttons: Iterable[str]) -> str
         f'<input type="checkbox" id="qc-info-{_slugify(title)}" class="qc-info-checkbox">'
         f'<label for="qc-info-{_slugify(title)}" class="qc-info-icon" title="Description">i</label>'
         "</div>"
-        f"{_get_downloads_div(buttons)}"
+        f"{downloads_div}"
         "</div>"
         f'<div class="qc-desc-body">{info}</div>'
         "</div>"

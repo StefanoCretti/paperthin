@@ -1,5 +1,6 @@
 import pathlib
 
+import pandas as pd
 import polars as pl
 
 from ._typing import Tabular
@@ -9,6 +10,9 @@ def scan_tabular(source: Tabular) -> pl.DataFrame:
 
     if isinstance(source, pl.DataFrame):
         return source
+
+    if isinstance(source, pd.DataFrame):
+        return pl.from_pandas(source)
 
     match pathlib.Path(source).suffix:
         case ".csv":
