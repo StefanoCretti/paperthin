@@ -4,12 +4,14 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import Literal
 
-type ContentType = Literal["png", "svg", "tsv", "csv"]
+type ContentType = Literal["png", "svg", "tsv", "csv", "json", "yaml"]
 MIMES: dict[ContentType, str] = {
     "png": "image/png",
     "svg": "image/svg+xml",
     "tsv": "text/tab-separated-values",
     "csv": "text/csv",
+    "json": "application/json",
+    "yaml": "application/yaml",
 }
 QC_STYLE: str = (
     "h2 { background: #eef1f5; padding: 8px; border-radius: 6px; }"

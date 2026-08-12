@@ -4,7 +4,7 @@ from nbconvert import HTMLExporter
 from traitlets.config import Config
 
 from . import html_helpers as hh
-from ._typing import Component
+from .components import Component
 
 
 class Report:
