@@ -1,7 +1,9 @@
 import base64
+import io
 import pathlib
-import struct
 from collections.abc import Iterable
+
+from PIL import Image
 
 from ..html_helpers import MIMES, DownloadButton
 from . import types as ct
@@ -15,12 +17,13 @@ class ImageAdapter:
         data: ct.TabularSource | None = None,
         scale: float = 1.0,
     ):
-        self._path = pathlib.Path(source)
+        path = pathlib.Path(source)
+        self._content = path.read_bytes()
         self._data = TabularAdapter(data, "tsv") if data is not None else None
         self._scale = scale
 
         self._output: ct.ImageOutput
-        match self._path.suffix:
+        match path.suffix:
             case ".png":
                 self._output = "png"
             case ".svg":
@@ -30,13 +33,11 @@ class ImageAdapter:
 
     def get_display(self) -> str:
         if self._output == "svg":
-            return self._path.read_text(encoding="utf-8")
+            return self._content.decode("utf-8")
 
-        content = self._path.read_bytes()
-        encoded = base64.b64encode(content).decode("ascii")
+        encoded = base64.b64encode(self._content).decode("ascii")
 
-        # png width lives in the IHDR chunk, right after the signature/length/type
-        width, _height = struct.unpack(">II", content[16:24])
+        width, _height = Image.open(io.BytesIO(self._content)).size
         scaled_width = round(width * self._scale)
 
         return (
@@ -45,9 +46,7 @@ class ImageAdapter:
         )
 
     def get_buttons(self, title: str) -> Iterable[DownloadButton]:
-        button = DownloadButton.from_format(
-            title, self._path.read_bytes(), self._output
-        )
+        button = DownloadButton.from_format(title, self._content, self._output)
         buttons = [button]
 
         if self._data is not None:
