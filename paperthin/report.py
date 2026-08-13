@@ -1,3 +1,5 @@
+import sys
+
 import jupytext
 from nbclient import NotebookClient
 from nbconvert import HTMLExporter
@@ -64,7 +66,14 @@ class Report:
         content += f"# %% [markdown]\n# # {self._title}\n\n"
         content += "\n\n".join(c.get_content() for c in self._components)
         nb = jupytext.reads(content, fmt="py:percent")
-        NotebookClient(nb).execute()
+
+        kernel_config = Config()
+        if sys.platform != "win32":
+            # local unix socket instead of tcp: silences ipykernel's
+            # unencrypted-transport warning, since ipc never leaves the machine
+            kernel_config.KernelManager.transport = "ipc"
+
+        NotebookClient(nb, config=kernel_config).execute()
 
         config = Config()
         config.HTMLExporter.exclude_input = True
