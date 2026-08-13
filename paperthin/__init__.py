@@ -1,4 +1,4 @@
-from .components import Section, Subsection
+from .components import Entry, Section
 from .report import Report
 
-__all__ = ("Report", "Section", "Subsection")
+__all__ = ("Entry", "Report", "Section")

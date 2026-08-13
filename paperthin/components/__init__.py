@@ -1,9 +1,7 @@
-from .protocol import Component
+from .entry import Entry
 from .section import Section
-from .subsection import Subsection
 
 __all__ = [
-    "Component",
+    "Entry",
     "Section",
-    "Subsection",
 ]

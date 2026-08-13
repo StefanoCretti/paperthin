@@ -6,11 +6,11 @@ import pandas as pd
 import polars as pl
 
 from ..html_helpers import DownloadButton
-from .types import TabularOutput, TabularSource
+from . import types as ct
 
 
-class TabularContent:
-    def __init__(self, source: TabularSource, output: TabularOutput):
+class TabularAdapter:
+    def __init__(self, source: ct.TabularSource, output: ct.TabularOutput):
 
         if isinstance(source, pd.DataFrame):
             source = pl.from_pandas(source)
@@ -25,7 +25,7 @@ class TabularContent:
                     raise ValueError(f"{source} is not a valid csv or tsv file.")
 
         self._data = source
-        self._output: TabularOutput = output
+        self._output: ct.TabularOutput = output
 
     def get_display(self) -> str:
 

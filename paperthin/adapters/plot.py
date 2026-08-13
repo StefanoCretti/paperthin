@@ -2,22 +2,22 @@ import io
 from collections.abc import Iterable
 
 from ..html_helpers import DownloadButton
-from .tabular import TabularContent
-from .types import PlotOutput, PlotSource, TabularSource
-
-PNG_DPI = 300
+from . import types as ct
+from .tabular import TabularAdapter
 
 
-class PlotContent:
+class PlotAdapter:
     def __init__(
         self,
-        source: PlotSource,
-        output: PlotOutput,
-        data: TabularSource | None = None,
+        source: ct.PlotSource,
+        output: ct.PlotOutput,
+        data: ct.TabularSource | None = None,
+        dpi: int = 300,
     ):
         self._fig = source
-        self._output: PlotOutput = output
-        self._data = TabularContent(data, "tsv") if data is not None else None
+        self._output: ct.PlotOutput = output
+        self._data = TabularAdapter(data, "tsv") if data is not None else None
+        self._dpi = dpi
 
         # svg is always generated since it is used for display, regardless of output
         buffer = io.BytesIO()
@@ -36,7 +36,7 @@ class PlotContent:
 
         if self._output in ("png", "svg+png"):
             buffer = io.BytesIO()
-            self._fig.savefig(buffer, format="png", bbox_inches="tight", dpi=PNG_DPI)
+            self._fig.savefig(buffer, format="png", bbox_inches="tight", dpi=self._dpi)
             buttons.append(DownloadButton.from_format(title, buffer.getvalue(), "png"))
 
         if self._data is not None:

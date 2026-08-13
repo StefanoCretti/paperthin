@@ -4,7 +4,7 @@ from nbconvert import HTMLExporter
 from traitlets.config import Config
 
 from . import html_helpers as hh
-from .components import Component
+from .components import types as ct
 
 
 class Report:
@@ -27,16 +27,16 @@ class Report:
 
     def __init__(self, title: str):
         self._title = title
-        self._components: list[Component] = []
+        self._components: list[ct.Component] = []
 
-    def add(self, component: Component) -> "Report":
+    def add(self, component: ct.Component) -> "Report":
         """Add a component to the report.
 
         Returns self to allow chaining add operations.
 
         Parameters
         ----------
-        component : object implementing the `Component` protocol, see constructor.
+        component : object implementing `get_content(self) -> str`, see constructor.
             An object to add at the end of the current queue of components.
 
         Returns
@@ -74,7 +74,7 @@ class Report:
 
         exporter = HTMLExporter(config=config)
         html, _ = exporter.from_notebook_node(nb)
-        html = html.replace("</head>", f"<style>{hh.QC_STYLE}</style></head>")
+        html = html.replace("</head>", f"<style>{hh.CSS_STYLE}</style></head>")
 
         with open(path, "w", encoding="utf-8") as f:
             f.write(html)

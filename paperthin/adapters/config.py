@@ -6,11 +6,11 @@ from html import escape
 import yaml
 
 from ..html_helpers import DownloadButton
-from .types import ConfigOutput, ConfigSource
+from . import types as ct
 
 
-class ConfigContent:
-    def __init__(self, source: ConfigSource, output: ConfigOutput):
+class ConfigAdapter:
+    def __init__(self, source: ct.ConfigSource, output: ct.ConfigOutput):
 
         if isinstance(source, str):
             match pathlib.Path(source).suffix:
@@ -24,11 +24,11 @@ class ConfigContent:
                     raise ValueError(f"{source} is not a valid json or yaml file.")
 
         self._data = source
-        self._output: ConfigOutput = output
+        self._output: ct.ConfigOutput = output
 
     def get_display(self) -> str:
         text = yaml.safe_dump(self._data, sort_keys=False, default_flow_style=False)
-        return f'<pre class="qc-config">{escape(text)}</pre>'
+        return f'<pre class="pt-config">{escape(text)}</pre>'
 
     def get_buttons(self, title: str) -> Iterable[DownloadButton]:
 

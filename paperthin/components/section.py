@@ -1,7 +1,3 @@
-from dataclasses import dataclass
-
-
-@dataclass
 class Section:
     """Separator to group results into sections.
 
@@ -14,7 +10,12 @@ class Section:
 
     """
 
-    title: str
+    def __init__(self, title: str):
+        self._title = title
+
+    @property
+    def title(self) -> str:
+        return self._title
 
     def get_content(self) -> str:
         """Return a markdown cell in jupytext percent format.
