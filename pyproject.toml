@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "paperthin"
+dynamic = ["version"]
+description = "Python library to easily create HTML reports"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.12"
+authors = [
+    { name = "Stefano Cretti", email = "stefanocretti99@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+dependencies = [
+    "ipykernel>=7.3",
+    "jupytext>=1.19",
+    "matplotlib>=3.11",
+    "nbclient>=0.11",
+    "nbconvert>=7.17",
+    "pandas>=3.0",
+    "pillow>=12.3",
+    "polars>=1.43",
+    "pyyaml>=6.0",
+    "traitlets>=5.15",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "pre-commit"]
+
+[project.urls]
+Homepage = "https://github.com/StefanoCretti/paperthin"
+Repository = "https://github.com/StefanoCretti/paperthin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["paperthin"]
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "paperthin/_version.py"
+
+[tool.ruff]
+target-version = "py312"
