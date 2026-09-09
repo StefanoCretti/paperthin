@@ -5,8 +5,8 @@ from nbclient import NotebookClient
 from nbconvert import HTMLExporter
 from traitlets.config import Config
 
-from . import html_helpers as hh
-from .components import types as ct
+from ._components import types as ct
+from ._html_helpers import CSS_STYLE
 
 
 class Report:
@@ -83,7 +83,7 @@ class Report:
 
         exporter = HTMLExporter(config=config)
         html, _ = exporter.from_notebook_node(nb)
-        html = html.replace("</head>", f"<style>{hh.CSS_STYLE}</style></head>")
+        html = html.replace("</head>", f"<style>{CSS_STYLE}</style></head>")
 
         with open(path, "w", encoding="utf-8") as f:
             f.write(html)

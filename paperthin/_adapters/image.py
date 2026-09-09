@@ -5,7 +5,7 @@ from collections.abc import Iterable
 
 from PIL import Image
 
-from ..html_helpers import MIMES, DownloadButton
+from .._html_helpers import MIMES, DownloadButton
 from . import types as ct
 from .tabular import TabularAdapter
 

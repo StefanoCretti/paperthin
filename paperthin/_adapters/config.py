@@ -5,7 +5,7 @@ from html import escape
 
 import yaml
 
-from ..html_helpers import DownloadButton
+from .._html_helpers import DownloadButton
 from . import types as ct
 
 

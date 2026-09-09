@@ -3,7 +3,7 @@ from html import escape
 
 import polars as pl
 
-from ..html_helpers import DownloadButton
+from .._html_helpers import DownloadButton
 from . import types as ct
 from .tabular import TabularAdapter
 

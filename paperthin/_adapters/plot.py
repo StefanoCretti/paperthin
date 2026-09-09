@@ -1,7 +1,7 @@
 import io
 from collections.abc import Iterable
 
-from ..html_helpers import DownloadButton
+from .._html_helpers import DownloadButton
 from . import types as ct
 from .tabular import TabularAdapter
 

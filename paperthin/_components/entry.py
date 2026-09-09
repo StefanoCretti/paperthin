@@ -1,12 +1,12 @@
-from .. import html_helpers as hh
-from ..adapters import (
+from .._adapters import (
     ConfigAdapter,
     ImageAdapter,
     PlotAdapter,
     TabularAdapter,
     ValueAdapter,
 )
-from ..adapters import types as ct
+from .._adapters import types as ct
+from .._html_helpers import get_html
 
 
 class Entry:
@@ -14,18 +14,18 @@ class Entry:
 
     An entry is a standardized way to display a result.
     It is always composed of the same elements:
-        - A title (h3 size)
-        - A toggleable description of the result
-        - Some graphical representation of the result
-        - Download buttons for the data
+
+    - A title (h3 size)
+    - A toggleable description of the result
+    - Some graphical representation of the result
+    - Download buttons for the data
 
     Though it is possible to initialize an entry by providing all these
     elements to the main class constructor, in most cases you should
     use one of the data-type specific constructors.
     The base constructor should be used only to create entries for
-    custom content types: pass any object implementing `get_display(self)
-    -> str` (the rendered HTML) and `get_buttons(self, title: str) ->
-    Iterable[DownloadButton]` (the download buttons).
+    custom content types: pass any object implementing the `Adapter`
+    protocol.
 
     See Also
     --------
@@ -220,7 +220,14 @@ class Entry:
         return Entry(ValueAdapter(source, output), title=title, info=info)
 
     def get_content(self) -> str:
-        html = hh.get_html(
+        """Return a code cell in jupytext percent format.
+
+        Returns
+        -------
+        str
+
+        """
+        html = get_html(
             self._content.get_display(),
             self._title,
             self._info,
