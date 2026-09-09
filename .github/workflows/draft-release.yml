@@ -1,0 +1,46 @@
+name: Draft release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install git-cliff
+
+      - id: notes
+        run: |
+          version="$(git cliff --unreleased --bumped-version)"
+          git cliff --unreleased --bump > notes.md
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          if [ ! -s notes.md ]; then echo "empty=true" >> "$GITHUB_OUTPUT"; fi
+
+      - if: steps.notes.outputs.empty != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing="$(gh release list --limit 30 --json tagName,isDraft \
+            --jq '.[] | select(.isDraft) | .tagName' | head -n 1)"
+          if [ -n "$existing" ]; then
+            gh release delete "$existing" --yes
+          fi
+          gh release create "${{ steps.notes.outputs.version }}" \
+            --draft \
+            --target main \
+            --title "${{ steps.notes.outputs.version }}" \
+            --notes-file notes.md

@@ -55,22 +55,10 @@ report.make_report("report.html")
 This produces a single, self-contained `report.html` file you can open in a
 browser or send to anyone: no Python or Jupyter required on their end.
 
-
-## Entries
-
-`Entry` currently provides constructors for the following data types:
-
-| Constructor           | Source                                     |
-| --------------------- | ------------------------------------------ |
-| `Entry.plot(...)`     | matplotlib `Figure`                        |
-| `Entry.image(...)`    | path to a `.png` or `.svg` file            |
-| `Entry.tabular(...)`  | polars/pandas `DataFrame`, or csv/tsv path |
-| `Entry.value(...)`    | a single `str` or `float`                  |
-| `Entry.config(...)`   | `dict`, or path to a yaml/json file        |
-
 ## Documentation
-This README covers the basics. Extended documentation is planned, including
-how to create custom entries, and will be linked here once available.
+Full documentation, including the list of built-in `Entry` types and how to
+create custom ones, is available at
+[paperthin.readthedocs.io](https://paperthin.readthedocs.io).
 
 ## Citation
 If paperthin is useful in your work, please consider citing the repo:
