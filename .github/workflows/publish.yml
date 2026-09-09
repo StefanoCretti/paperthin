@@ -49,3 +49,13 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  docs:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Rebuild latest docs to refresh the version switcher
+        run: |
+          curl -sS --fail-with-body -X POST \
+            -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN }}" \
+            https://app.readthedocs.org/api/v3/projects/paperthin/versions/latest/builds/
