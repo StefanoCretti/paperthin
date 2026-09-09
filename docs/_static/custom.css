@@ -1,0 +1,41 @@
+.pt-preview {
+  width: 100%;
+  height: 32rem;
+  min-height: 20rem;
+  overflow: hidden;
+  border: 1px solid var(--pst-color-border);
+  border-radius: 0.4rem;
+  background: white;
+}
+
+.pt-preview-caption {
+  margin-top: 0.4rem;
+  font-size: 0.85em;
+  text-align: right;
+}
+
+:root {
+  --pt-wip-stripe: rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="dark"] {
+  --pt-wip-stripe: rgba(255, 255, 255, 0.06);
+}
+
+div.admonition.wip {
+  border-color: var(--pst-color-warning);
+}
+
+div.admonition.wip > .admonition-title {
+  background-color: var(--pst-color-warning-bg);
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 10px,
+    var(--pt-wip-stripe) 10px 20px
+  );
+}
+
+div.admonition.wip > .admonition-title::after {
+  color: var(--pst-color-warning);
+  content: "\f0ad";
+}
