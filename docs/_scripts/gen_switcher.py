@@ -16,6 +16,20 @@ OUT_FILE = pathlib.Path(__file__).parent.parent / "_static" / "switcher.json"
 _TAG_RE = re.compile(r"^v(\d+)\.(\d+)\.(\d+)$")
 
 
+def _has_docs(tag: str) -> bool:
+    """Check whether a tag predates the documentation and cannot be built."""
+
+    return (
+        subprocess.run(
+            ["git", "cat-file", "-e", f"{tag}:docs/conf.py"],
+            capture_output=True,
+            check=False,
+            cwd=OUT_FILE.parent.parent.parent,
+        ).returncode
+        == 0
+    )
+
+
 def _tags() -> list[str]:
     try:
         out = subprocess.run(
@@ -28,19 +42,23 @@ def _tags() -> list[str]:
     except (subprocess.CalledProcessError, FileNotFoundError):
         return []
 
-    tags = [t for t in out.split() if _TAG_RE.match(t)]
-    return sorted(
-        tags,
-        key=lambda t: tuple(int(n) for n in _TAG_RE.match(t).groups()),
-        reverse=True,
-    )
+    found: list[tuple[tuple[int, ...], str]] = []
+    for tag in out.split():
+        match = _TAG_RE.match(tag)
+        if match is None or not _has_docs(tag):
+            continue
+        found.append((tuple(int(n) for n in match.groups()), tag))
+
+    return [tag for _, tag in sorted(found, reverse=True)]
 
 
 def build() -> None:
-    entries = [{"name": "dev", "version": "latest", "url": f"{BASE_URL}/latest/"}]
+    entries: list[dict[str, str | bool]] = [
+        {"name": "dev", "version": "latest", "url": f"{BASE_URL}/latest/"}
+    ]
 
     for index, tag in enumerate(_tags()):
-        entry = {
+        entry: dict[str, str | bool] = {
             "name": tag.lstrip("v"),
             "version": tag,
             "url": f"{BASE_URL}/{tag}/",
